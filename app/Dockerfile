@@ -1,18 +1,24 @@
-# Базовий образ з Java (JDK) + Gradle
+# Етап 1: Збирання проєкту
 FROM gradle:8.5-jdk17 AS build
 
-# Копіюємо проєкт у контейнер
-COPY --chown=gradle:gradle . /home/gradle/project
+# Встановлюємо робочу директорію та копіюємо проєкт
 WORKDIR /home/gradle/project
+COPY --chown=gradle:gradle . .
 
-# Будуємо проект без тестів
-RUN gradle build -x test
+# Даємо дозвіл на виконання gradlew
+RUN chmod +x ./gradlew
 
-# Створюємо легкий образ лише з JRE
+# Збираємо проєкт без тестів
+RUN ./gradlew clean build -x test -x check --stacktrace
+
+# Етап 2: Створення фінального образу з легким JRE
 FROM openjdk:17-jdk-slim
 
-# Копіюємо зібраний .jar файл
+# Створюємо директорію для застосунку
+WORKDIR /app
+
+# Копіюємо зібраний .jar файл із попереднього етапу
 COPY --from=build /home/gradle/project/app/build/libs/*.jar /app/app.jar
 
-# Запускаємо Telegram-бота
+# Вказуємо команду запуску бота
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]

@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
         telegramScope.launch {
             try {
                 val bot = bot {
-                    token = "7819562891:AAHwFiYZxBnL25OTGIq_7Nv357_BOCEYnFM" // ⚠️ Не забувай замінити на свій токен
+                    token = "MyToken" // ⚠️ Не забувай замінити на свій токен
 
                     dispatch {
                         command("start") {
